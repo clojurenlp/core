@@ -15,8 +15,8 @@
   (let [parser (LexicalizedParser.
                 (java.io.ObjectInputStream.
                  (java.util.zip.GZIPInputStream.
-                  (java.io.FileInputStream.
-                   (.getFile
+                  (.getInputStream
+                   (.openConnection
                     (clojure.java.io/resource "englishPCFG.ser.gz"))))))]
     #(.apply parser %)))
 
