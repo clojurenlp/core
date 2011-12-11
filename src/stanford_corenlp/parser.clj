@@ -1,6 +1,7 @@
 (ns stanford-corenlp.parser
   (:import
    (java.io StringReader)
+   (edu.stanford.nlp.ling Word)
    (edu.stanford.nlp.trees LabeledScoredTreeReaderFactory)
    (edu.stanford.nlp.parser.lexparser LexicalizedParser)))
 
@@ -11,12 +12,19 @@
     (.newTreeReader trf
                     (StringReader. s)))))
 
-(defonce parse
-  (let [parser (LexicalizedParser.
-                (java.io.ObjectInputStream.
-                 (java.util.zip.GZIPInputStream.
-                  (.getInputStream
-                   (.openConnection
-                    (clojure.java.io/resource "englishPCFG.ser.gz"))))))]
-    #(.apply parser %)))
+(defonce parser
+  (LexicalizedParser.
+   (java.io.ObjectInputStream.
+    (java.util.zip.GZIPInputStream.
+     (.getInputStream
+      (.openConnection
+       (clojure.java.io/resource "englishPCFG.ser.gz")))))))
+
+(defmulti parse sequential?)
+
+(defmethod parse true [coll]
+  (.apply parser (map #(Word. %) coll)))
+
+(defmethod parse false [s]
+  (.apply parser s))
 

@@ -35,10 +35,7 @@
 
 
 (def dependency-parse nil)
-(defmulti dependency-parse
-  #(if (seq? %)
-     :seq
-     (class %)))
+(defmulti dependency-parse class)
 
 (let [tlp (PennTreebankLanguagePack.)
       gsf (.grammaticalStructureFactory tlp)]
@@ -57,10 +54,5 @@
               (.newGrammaticalStructure gsf n)))))
      (catch java.lang.RuntimeException _))))
 
-(defmethod dependency-parse String [s]
+(defmethod dependency-parse :default [s]
   (dependency-parse (parser/parse s)))
-
-(defmethod dependency-parse :seq [s]
-  (dependency-parse
-   (parser/parse
-    (map #(edu.stanford.nlp.ling.Word. %) s))))
