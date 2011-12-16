@@ -10,7 +10,16 @@
  (defn read-parse-tree [s]
    (.readTree
     (.newTreeReader trf
-                    (StringReader. s)))))
+                    (StringReader. s))))
+ (defn read-scored-parse-tree [s]
+   (read-parse-tree
+    (->>
+     (filter #(not (and
+                    (.startsWith % "[")
+                    (.endsWith % "]")))
+             (.split s " "))
+     (interpose " ")
+     (apply str)))))
 
 (defonce parser
   (LexicalizedParser.
