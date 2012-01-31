@@ -21,19 +21,21 @@
      (interpose " ")
      (apply str)))))
 
-(defonce parser
-  (LexicalizedParser.
-   (java.io.ObjectInputStream.
-    (java.util.zip.GZIPInputStream.
-     (.getInputStream
-      (.openConnection
-       (clojure.java.io/resource "englishPCFG.ser.gz")))))))
+(def load-parser
+  (memoize
+   (fn []
+     (LexicalizedParser.
+      (java.io.ObjectInputStream.
+       (java.util.zip.GZIPInputStream.
+        (.getInputStream
+         (.openConnection
+          (clojure.java.io/resource "englishPCFG.ser.gz")))))))))
 
 (defmulti parse sequential?)
 
 (defmethod parse true [coll]
-  (.apply parser (map #(Word. %) coll)))
+  (.apply (load-parser) (map #(Word. %) coll)))
 
 (defmethod parse false [s]
-  (.apply parser s))
+  (.apply (load-parser) s))
 
