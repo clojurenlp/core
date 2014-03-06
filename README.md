@@ -1,43 +1,45 @@
-# stanford-parser
+# corenlp
 
-Clojure wrapper for Stanford CoreNLP tools.  Currently very incomplete, only wraps the parser and dependencies.
+Clojure wrapper for Stanford CoreNLP tools.  Currently very incomplete, only
+wraps the tokenizer, parser and dependencies.
 
 ## Usage
+
+### Tokenization
+
+    (use 'corenlp)
+    (def text "This is a simple sentence.")
+    (tokenize text)
 
 ### Parsing
 
 To parse a sentence:
 
-	(use stanford-corenlp.parser)
-	(parse "I like cheese.")
-
-Or if already tokenized:
-
-	(parse ["I" "like" "cheese" "."])
+	(use 'corenlp)
+	(parse (tokenize text))
 
 You will get back a LabeledScoredTreeNode which you can plug in to
 other Stanford CoreNLP functions or can convert to a standard Treebank
 string with:
 
-	(str (parse "I like cheese."))
+	(str (parse (tokenize text)))
 
 ### Stanford Dependencies
 
-	(use 'stanford-corenlp.dependencies)
 	(dependency-graph "I like cheese.")
 
 will parse the sentence and return the dependency graph as a
-[loom](https://github.com/jkk/loom) graph, which you can then traverse
-with standard graph algorithms like shortest path, etc. You can also view it:
+[loom](https://github.com/jkk/loom) graph, which you can then traverse with
+standard graph algorithms like shortest path, etc. You can also view it:
 
-	(def dg (dependency-graph "I like cheese."))
+	(def graph (dependency-graph "I like cheese."))
 	(use 'loom.io)
-	(view dg)
+	(view graph)
 
 This requires GraphViz to be installed.
 
 ## License
 
-Copyright (C) 2011 Cory Giles (Clojure code only)
+Copyright (C) 2011-2014 Cory Giles (Clojure code only)
 
 Distributed under the Eclipse Public License, the same as Clojure.

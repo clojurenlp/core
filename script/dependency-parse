@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+lein exec <(cat <<EOF
+(use '[leiningen.exec :only (deps)])
+(deps '[[es.corygil/corenlp "3.3.1-SNAPSHOT"]
+        [edu.stanford.nlp/stanford-corenlp "3.3.1"]
+        [edu.stanford.nlp/stanford-corenlp "3.3.1"
+         :classifier "models"]
+        [org.clojure/data.json "0.2.4"]])
+
+(use 'corenlp)
+(require
+  '[clojure.data.json :as json])
+
+(loop []
+  (let [line (.readLine *in*)]
+    (doseq [sentence (split-sentences line)]
+      (println
+        (json/write-str
+          (dependency-parse sentence))))
+    (recur))) 
+EOF)
