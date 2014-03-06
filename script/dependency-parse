@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 lein exec <(cat <<EOF
+
 (use '[leiningen.exec :only (deps)])
 (deps '[[es.corygil/corenlp "3.3.1-SNAPSHOT"]
         [edu.stanford.nlp/stanford-corenlp "3.3.1"]
@@ -13,10 +14,16 @@ lein exec <(cat <<EOF
   '[clojure.data.json :as json])
 
 (loop []
-  (let [line (.readLine *in*)]
-    (doseq [sentence (split-sentences line)]
-      (println
-        (json/write-str
-          (dependency-parse sentence))))
+  (let [line (.readLine *in*)
+        parses 
+        (or (try
+              (map dependency-parse
+                   (split-sentences line)))
+            [])]
+    (println
+      (json/write-str parses))
     (recur))) 
-EOF)
+
+EOF) 2> /dev/null
+
+# vim: set ft=clojure :
