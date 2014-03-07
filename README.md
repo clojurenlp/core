@@ -11,6 +11,15 @@ wraps the tokenizer, parser and dependencies.
     (def text "This is a simple sentence.")
     (tokenize text)
 
+### Part-of-Speech Tagging
+
+    (use 'corenlp)
+    (tag-sentence (tokenize "Colorless green ideas sleep furiously."))
+    ;; => [#<TaggedWord Colorless/JJ> #<TaggedWord green/JJ> ...]
+
+Returns a list of `TaggedWord` objects. Call `.tag()` on a `TaggedWord` instance
+to get its tag.
+
 ### Parsing
 
 To parse a sentence:
