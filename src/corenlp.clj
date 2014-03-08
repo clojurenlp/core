@@ -38,6 +38,21 @@
 
 (defmethod word Word [w] w)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Part-of-speech tagging
+;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def load-tagger
+  (memoize (fn [] (MaxentTagger. MaxentTagger/DEFAULT_JAR_PATH))))
+
+(defmulti tag-sentence type)
+
+(defmethod tag-sentence java.util.ArrayList [sentence]
+  (.tagSentence (load-tagger) sentence))
+
+(defmethod tag-sentence :default [coll]
+  (.tagSentence (load-tagger) (java.util.ArrayList. (map word coll))))
+
 ;;;;;;;;;;
 ;; Parsing
 ;;;;;;;;;;
