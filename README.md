@@ -55,5 +55,5 @@ Distributed under the Eclipse Public License, the same as Clojure.
 
 ## Contributors
 
-Cory Giles 
-Hans Engel
+- Cory Giles 
+- Hans Engel
