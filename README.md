@@ -14,7 +14,7 @@ wraps the tokenizer, parser and dependencies.
 ### Part-of-Speech Tagging
 
     (use 'corenlp)
-    (tag-sentence (tokenize "Colorless green ideas sleep furiously."))
+    (pos-tag (tokenize "Colorless green ideas sleep furiously."))
     ;; => [#<TaggedWord Colorless/JJ> #<TaggedWord green/JJ> ...]
 
 Returns a list of `TaggedWord` objects. Call `.tag()` on a `TaggedWord` instance
@@ -49,6 +49,11 @@ This requires GraphViz to be installed.
 
 ## License
 
-Copyright (C) 2011-2014 Cory Giles (Clojure code only)
+Copyright (C) 2011-2014 Contributors (Clojure code only)
 
 Distributed under the Eclipse Public License, the same as Clojure.
+
+## Contributors
+
+Cory Giles 
+Hans Engel

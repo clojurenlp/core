@@ -4,6 +4,7 @@
     (edu.stanford.nlp.process 
       DocumentPreprocessor PTBTokenizer)
     (edu.stanford.nlp.ling Word)
+    (edu.stanford.nlp.tagger.maxent MaxentTagger)
     (edu.stanford.nlp.trees 
       LabeledScoredTreeNode PennTreebankLanguagePack  
       LabeledScoredTreeReaderFactory)
@@ -20,18 +21,22 @@
 ;;;;;;;;;;;;;;;;
 
 (defn tokenize [s]
+  "Tokenize an input string into a sequence of Word objects."
   (.tokenize
     (PTBTokenizer/newPTBTokenizer
       (StringReader. s)))) 
 
 (defn split-sentences [text]
+  "Split a string into a sequence of sentences, each of which is a sequence of Word objects. (Thus, this method both splits sentences and tokenizes simultaneously.)"
   (let [rdr (StringReader. text)]
     (map #(vec (map str %))
       (iterator-seq
         (.iterator
           (DocumentPreprocessor. rdr))))))
  
-(defmulti word type)
+(defmulti word 
+  "Attempt to convert a given object into a Word, which is used by many downstream algorithms."
+  type)
 
 (defmethod word String [s]
   (Word. s))
@@ -42,27 +47,34 @@
 ;; Part-of-speech tagging
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def load-tagger
+(def ^{:private true} 
+  load-pos-tagger
   (memoize (fn [] (MaxentTagger. MaxentTagger/DEFAULT_JAR_PATH))))
 
-(defmulti tag-sentence type)
+(defmulti pos-tag 
+  "Tag a sequence of words with their parts of speech, returning a sequence of TaggedWord objects."
+  type)
 
-(defmethod tag-sentence java.util.ArrayList [sentence]
-  (.tagSentence (load-tagger) sentence))
+(defmethod pos-tag java.util.ArrayList [sentence]
+  (.tagSentence (load-pos-tagger) sentence))
 
-(defmethod tag-sentence :default [coll]
-  (.tagSentence (load-tagger) (java.util.ArrayList. (map word coll))))
+(defmethod pos-tag :default [coll]
+  (.tagSentence (load-pos-tagger) 
+                (java.util.ArrayList. (map word coll))))
 
 ;;;;;;;;;;
 ;; Parsing
 ;;;;;;;;;;
 
 (let [trf (LabeledScoredTreeReaderFactory.)]
+
  (defn read-parse-tree [s]
+   "Read a parse tree in PTB format from a string (produced by this or another parser)"
    (.readTree
     (.newTreeReader trf
                     (StringReader. s))))
  (defn read-scored-parse-tree [s]
+   "Read a parse tree in PTB format with scores from a string."
    (read-parse-tree
     (->>
      (filter #(not (and
@@ -72,12 +84,13 @@
      (interpose " ")
      (apply str)))))
 
-(def load-parser
+(def ^{:private true} load-parser
   (memoize
     (fn []
       (LexicalizedParser/loadModel))))
 
 (defn parse [coll]
+  "Use the LexicalizedParser to produce a constituent parse of sequence of strings or CoreNLP Word objects."
   (.apply (load-parser)
           (java.util.ArrayList. 
             (map word coll)))) 
@@ -102,6 +115,7 @@
             [-1 r :root]))))
 
 (defn dependency-graph [dp]
+  "Produce a loom graph from a DependencyParse record."
   (let [[words tags edges] (map #(% dp) [:words :tags :edges])
         g (apply digraph (map (partial take 2) edges))]
     (reduce (fn [g [i t]] (add-attr g i :tag t))
@@ -113,10 +127,13 @@
 
 (def dependency-parse nil)
 
-(defmulti dependency-parse class)
+(defmulti dependency-parse 
+  "Produce a DependencyParse from a sentence, which is a directed graph structure whose nodes are words and edges are typed dependencies (Marneffe et al, 2005) between them." 
+  class)
 
 (let [tlp (PennTreebankLanguagePack.)
       gsf (.grammaticalStructureFactory tlp)]
+
  (defmethod dependency-parse LabeledScoredTreeNode [n]
    (try
      (let [ty (.taggedYield n)]
