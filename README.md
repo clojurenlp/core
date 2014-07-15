@@ -1,5 +1,7 @@
 # corenlp
 
+**Update July 2014 - This project is abandoned. I no longer use Clojure or do much NLP, so I have little incentive to maintain this code. If someone is interested in forking or taking maintainership of this project, please contact me and I will be happy to answer any questions you have, time permitting.**
+
 Clojure wrapper for Stanford CoreNLP tools.  Currently very incomplete, only
 wraps the tokenizer, parser and dependencies.
 
