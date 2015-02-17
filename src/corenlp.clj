@@ -10,10 +10,11 @@
       LabeledScoredTreeReaderFactory)
     (edu.stanford.nlp.parser.lexparser 
       LexicalizedParser))
-  
   (:use
     (loom graph attr)
     clojure.set)
+  (:require
+    [clojure.data.json :as json])
   (:gen-class :main true))
  
 ;;;;;;;;;;;;;;;;
@@ -89,12 +90,19 @@
     (fn []
       (LexicalizedParser/loadModel))))
 
-(defn parse [coll]
+
+(defmulti parse class)
+
+(defmethod parse java.lang.String [s]
+  (parse (tokenize s)))
+
+(defmethod parse :default [coll]
+  [coll]
   "Use the LexicalizedParser to produce a constituent parse of sequence of strings or CoreNLP Word objects."
   (.apply (load-parser)
           (java.util.ArrayList. 
             (map word coll)))) 
-
+ 
 ;; Typed Dependencies
 
 (defrecord DependencyParse [words tags edges])
@@ -113,19 +121,6 @@
          (concat (:edges dp)
           (for [r (roots dp)]
             [-1 r :root]))))
-
-(defn dependency-graph [dp]
-  "Produce a loom graph from a DependencyParse record."
-  (let [[words tags edges] (map #(% dp) [:words :tags :edges])
-        g (apply digraph (map (partial take 2) edges))]
-    (reduce (fn [g [i t]] (add-attr g i :tag t))
-            (reduce (fn [g [i w]] (add-attr g i :word w))
-                    (reduce (fn [g [gov dep type]]
-                              (add-attr g gov dep :type type)) g edges)
-                    (map-indexed vector words))
-            (map-indexed vector tags))))
-
-(def dependency-parse nil)
 
 (defmulti dependency-parse 
   "Produce a DependencyParse from a sentence, which is a directed graph structure whose nodes are words and edges are typed dependencies (Marneffe et al, 2005) between them." 
@@ -151,3 +146,45 @@
 
 (defmethod dependency-parse :default [s]
   (dependency-parse (parse s)))
+
+(defmulti dependency-graph class)
+
+(defmethod dependency-graph DependencyParse [dp]
+  "Produce a loom graph from a DependencyParse record."
+  (let [[words tags edges] (map #(% dp) [:words :tags :edges])
+        g (apply digraph (map (partial take 2) edges))]
+    (reduce (fn [g [i t]] (add-attr g i :tag t))
+            (reduce (fn [g [i w]] (add-attr g i :word w))
+                    (reduce (fn [g [gov dep type]]
+                              (add-attr g gov dep :type type)) g edges)
+                    (map-indexed vector words))
+            (map-indexed vector tags))))
+
+(defmethod dependency-graph :default [x]
+  (dependency-graph (dependency-parse x)))
+ 
+;; CLI (for dependency parsing)
+
+(defn between [n low high]
+  (and (>= n low) (<= n high)))
+
+;; TODO: use real CLI argument parsing
+                
+(defn -main [& args]
+  (let [min-length 5
+        max-length 
+        (if (> (count args) 1)
+          (Integer/parseInt (second args))
+          50)]
+    (doseq [line (line-seq (java.io.BufferedReader. *in*))
+            :let [parses
+                  (or (try
+                        (map dependency-parse
+                             (filter #(between (count %) 
+                                               min-length
+                                               max-length)
+                                     (split-sentences line))))
+                      [])]]
+      (if parses
+        (println
+          (json/write-str parses))))))
