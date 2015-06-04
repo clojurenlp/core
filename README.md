@@ -3,7 +3,7 @@
 Clojure wrapper for Stanford CoreNLP tools.  Currently very incomplete, only
 wraps the tokenizer, parser and dependencies.
 
-[![Circle CI](https://circleci.com/gh/damienstanton/stanford-corenlp.svg?style=svg)](https://circleci.com/gh/damienstanton/stanford-corenlp)
+[![Circle CI](https://circleci.com/gh/damienstanton/stanford-corenlp.svg?style=shield)](https://circleci.com/gh/damienstanton/stanford-corenlp)
 
 ## Usage
 
