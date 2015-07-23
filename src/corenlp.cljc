@@ -3,7 +3,9 @@
     (java.io StringReader)
     (edu.stanford.nlp.process 
       DocumentPreprocessor PTBTokenizer)
-    (edu.stanford.nlp.ling Word)
+    (edu.stanford.nlp.ling
+     CoreAnnotations$PartOfSpeechAnnotation
+     Word)
     (edu.stanford.nlp.tagger.maxent MaxentTagger)
     (edu.stanford.nlp.trees 
       LabeledScoredTreeNode PennTreebankLanguagePack  
@@ -27,6 +29,16 @@
     (PTBTokenizer/newPTBTokenizer
       (StringReader. s)))) 
 
+(defn tokenize-core-label [s]
+  "Tokenize an input string into a sequence of `CoreLabel` objects."
+  (.tokenize
+    (PTBTokenizer/newPTBTokenizer
+     (StringReader. s)
+     ;; tokenize newlines
+     false
+     ;; invertible
+     false)))
+
 (defn split-sentences [text]
   "Split a string into a sequence of sentences, each of which is a sequence of Word objects. (Thus, this method both splits sentences and tokenizes simultaneously.)"
   (let [rdr (StringReader. text)]
@@ -34,8 +46,8 @@
       (iterator-seq
         (.iterator
           (DocumentPreprocessor. rdr))))))
- 
-(defmulti word 
+
+(defmulti word
   "Attempt to convert a given object into a Word, which is used by many downstream algorithms."
   type)
 
@@ -52,16 +64,18 @@
   load-pos-tagger
   (memoize (fn [] (MaxentTagger. MaxentTagger/DEFAULT_JAR_PATH))))
 
-(defmulti pos-tag 
-  "Tag a sequence of words with their parts of speech, returning a sequence of TaggedWord objects."
-  type)
+(defn pos-tag-annotate
+  "Annotate a `CoreLabel` sequence with part-of-speech tags."
+  [coll]
 
-(defmethod pos-tag java.util.ArrayList [sentence]
-  (.tagSentence (load-pos-tagger) sentence))
+  (doall (map #(.set %1 CoreAnnotations$PartOfSpeechAnnotation (.tag %2))
+            coll (.tagSentence (load-pos-tagger) coll)))
+  coll)
 
-(defmethod pos-tag :default [coll]
-  (.tagSentence (load-pos-tagger) 
-                (java.util.ArrayList. (map word coll))))
+(defn pos-tag
+  "Return the parts of speech for the words in a string."
+  [string]
+  (map #(vector (.word %) (.tag %)) (-> string tokenize-core-label pos-tag-annotate)))
 
 ;;;;;;;;;;
 ;; Parsing
