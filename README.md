@@ -20,7 +20,7 @@ wraps the tokenizer, parser and dependencies.
     ;; => [#<TaggedWord Colorless/JJ> #<TaggedWord green/JJ> ...]
 
 Returns a list of `TaggedWord` objects. Call `.tag()` on a `TaggedWord` instance
-to get its tag.
+to get its tag. For more information, see the [relevant Javadoc](http://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/ling/TaggedWord.html)
 
 ### Parsing
 
