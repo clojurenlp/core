@@ -1,14 +1,19 @@
 (ns corenlp
   (:import
     (java.io StringReader)
-    (edu.stanford.nlp.process 
+    (java.util ArrayList Collection)
+    (edu.stanford.nlp.process
       DocumentPreprocessor PTBTokenizer)
-    (edu.stanford.nlp.ling Word)
+    (edu.stanford.nlp.ling TaggedWord Word)
     (edu.stanford.nlp.tagger.maxent MaxentTagger)
-    (edu.stanford.nlp.trees 
-      LabeledScoredTreeNode PennTreebankLanguagePack  
-      LabeledScoredTreeReaderFactory)
-    (edu.stanford.nlp.parser.lexparser 
+    (edu.stanford.nlp.trees
+      LabeledScoredTreeNode
+      LabeledScoredTreeReaderFactory
+      PennTreebankLanguagePack
+      TypedDependency)
+    (edu.stanford.nlp.parser.common
+      ParserGrammar)
+    (edu.stanford.nlp.parser.lexparser
       LexicalizedParser))
   (:use
     (loom graph attr)
@@ -39,7 +44,7 @@
   "Attempt to convert a given object into a Word, which is used by many downstream algorithms."
   type)
 
-(defmethod word String [s]
+(defmethod word String [^String s]
   (Word. s))
 
 (defmethod word Word [w] w)
@@ -56,12 +61,12 @@
   "Tag a sequence of words with their parts of speech, returning a sequence of TaggedWord objects."
   type)
 
-(defmethod pos-tag java.util.ArrayList [sentence]
-  (.tagSentence (load-pos-tagger) sentence))
+(defmethod pos-tag ArrayList [sentence]
+  (.tagSentence ^MaxentTagger (load-pos-tagger) ^ArrayList sentence))
 
 (defmethod pos-tag :default [coll]
-  (.tagSentence (load-pos-tagger) 
-                (java.util.ArrayList. (map word coll))))
+  (.tagSentence ^MaxentTagger (load-pos-tagger) 
+                (ArrayList. ^Collection (map word coll))))
 
 ;;;;;;;;;;
 ;; Parsing
@@ -74,13 +79,15 @@
    (.readTree
     (.newTreeReader trf
                     (StringReader. s))))
- (defn read-scored-parse-tree [s]
+
+ (defn read-scored-parse-tree [^String s]
    "Read a parse tree in PTB format with scores from a string."
    (read-parse-tree
     (->>
-     (filter #(not (and
-                    (.startsWith % "[")
-                    (.endsWith % "]")))
+     (filter (fn [^String w]
+               (not (and
+                     (.startsWith w "[")
+                     (.endsWith w "]"))))
              (.split s " "))
      (interpose " ")
      (apply str)))))
@@ -99,10 +106,10 @@
 (defmethod parse :default [coll]
   [coll]
   "Use the LexicalizedParser to produce a constituent parse of sequence of strings or CoreNLP Word objects."
-  (.apply (load-parser)
-          (java.util.ArrayList. 
-            (map word coll)))) 
- 
+  (.apply ^ParserGrammar (load-parser)
+          (ArrayList.
+           ^Collection (map word coll))))
+
 ;; Typed Dependencies
 
 (defrecord DependencyParse [words tags edges])
@@ -129,13 +136,13 @@
 (let [tlp (PennTreebankLanguagePack.)
       gsf (.grammaticalStructureFactory tlp)]
 
- (defmethod dependency-parse LabeledScoredTreeNode [n]
+ (defmethod dependency-parse LabeledScoredTreeNode [^LabeledScoredTreeNode n]
    (try
      (let [ty (.taggedYield n)]
        (DependencyParse.
-        (vec (map #(.word %) ty))
-        (vec (map #(.tag %) ty))
-        (map (fn [d] 
+        (vec (map #(.word ^TaggedWord %) ty))
+        (vec (map #(.tag ^TaggedWord %) ty))
+        (map (fn [^TypedDependency d] 
                [(dec (.. d gov index))
                 (dec (.. d dep index))
                 (keyword
