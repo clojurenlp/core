@@ -3,7 +3,9 @@
 Clojure wrapper for Stanford CoreNLP tools.  Currently very incomplete, only
 wraps the tokenizer, parser and dependencies. Pull requests are welcome on the dev branch.
 
-[![Circle CI](https://circleci.com/gh/damienstanton/stanford-corenlp.svg?style=shield)](https://circleci.com/gh/damienstanton/stanford-corenlp)
+# Notice!
+
+I am working on a major rewrite [and further completion] of this library. Please stay tuned and have no fear of abandonware :)
 
 
 ## Usage
@@ -52,7 +54,7 @@ This requires GraphViz to be installed.
 
 ## License
 
-Copyright (C) 2011-2015 Contributors (Clojure code only)
+Copyright (C) 2011-2016 Contributors (Clojure code only)
 
 Distributed under the Eclipse Public License, the same as Clojure.
 
