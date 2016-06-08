@@ -1,5 +1,7 @@
 # corenlp
 
+Current build: [![CircleCI](https://circleci.com/gh/damienstanton/stanford-corenlp/tree/master.svg?style=svg&circle-token=673be35e60d99ec7be891d6da03b9865a48cb906)](https://circleci.com/gh/damienstanton/stanford-corenlp/tree/master)
+
 Clojure wrapper for Stanford CoreNLP tools.  Currently very incomplete, only
 wraps the tokenizer, parser and dependencies. Pull requests are welcome on the dev branch.
 
@@ -60,6 +62,6 @@ Distributed under the Eclipse Public License, the same as Clojure.
 
 ## Contributors
 
-- Cory Giles 
+- Cory Giles
 - Hans Engel
 - Damien Stanton
