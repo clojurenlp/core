@@ -2,13 +2,9 @@
 
 Current build: [![CircleCI](https://circleci.com/gh/damienstanton/stanford-corenlp/tree/master.svg?style=svg&circle-token=673be35e60d99ec7be891d6da03b9865a48cb906)](https://circleci.com/gh/damienstanton/stanford-corenlp/tree/master)
 
-Clojure wrapper for Stanford CoreNLP tools.  Currently very incomplete, only
-wraps the tokenizer, parser and dependencies. Pull requests are welcome on the dev branch.
+Natural language processing in Clojure/ClojureScript based on the Stanford-CoreNLP parser.
 
-# Notice!
-
-I am working on a major rewrite [and further completion] of this library. Please stay tuned and have no fear of abandonware :)
-
+**Warning:** Under heavy rewrite. Please refrain from trying to use this until it is complete!
 
 ## Usage
 
