@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-lein run -m corenlp 2> /dev/null
