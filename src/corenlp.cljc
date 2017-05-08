@@ -1,7 +1,7 @@
 (ns corenlp
   (:import
     (java.io StringReader)
-    (java.util ArrayList Collection)
+    (java.util ArrayList Collection Properties)
     (edu.stanford.nlp.process
       DocumentPreprocessor PTBTokenizer)
     (edu.stanford.nlp.ling TaggedWord Word)
@@ -14,7 +14,8 @@
     (edu.stanford.nlp.parser.common
       ParserGrammar)
     (edu.stanford.nlp.parser.lexparser
-      LexicalizedParser))
+      LexicalizedParser)
+    [edu.stanford.nlp.pipeline Annotation StanfordCoreNLP])
   (:use
     (loom graph attr)
     clojure.set)
@@ -67,6 +68,22 @@
 (defmethod pos-tag :default [coll]
   (.tagSentence ^MaxentTagger (load-pos-tagger) 
                 (ArrayList. ^Collection (map word coll))))
+
+;;;;;;;;;;;;;;
+;; NER Tagging
+;;;;;;;;;;;;;;
+
+(defn initialize-pipeline
+  []
+  (let [ner-props (Properties.)]
+    (.put ner-props "annotators" "tokenize, ssplit, pos, lemma, ner")
+    (.put ner-props "pos.model" )
+    (StanfordCoreNLP. ner-props true)))
+
+(defn annotate-text
+  [text]
+  (.process (initialize-pipeline) text))
+
 
 ;;;;;;;;;;
 ;; Parsing
