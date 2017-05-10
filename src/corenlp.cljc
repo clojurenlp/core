@@ -1,21 +1,23 @@
 (ns corenlp
-  (:import
-    (java.io StringReader)
-    (java.util ArrayList Collection Properties)
-    (edu.stanford.nlp.process
-      DocumentPreprocessor PTBTokenizer)
-    (edu.stanford.nlp.ling TaggedWord Word)
-    (edu.stanford.nlp.tagger.maxent MaxentTagger)
-    (edu.stanford.nlp.trees
-      LabeledScoredTreeNode
-      LabeledScoredTreeReaderFactory
-      PennTreebankLanguagePack
-      TypedDependency)
-    (edu.stanford.nlp.parser.common
-      ParserGrammar)
-    (edu.stanford.nlp.parser.lexparser
-      LexicalizedParser)
-    [edu.stanford.nlp.pipeline Annotation StanfordCoreNLP])
+  (:import (java.io StringReader)
+           (java.util ArrayList
+                      Collection
+                      Properties)
+           (edu.stanford.nlp.process DocumentPreprocessor
+                                     PTBTokenizer)
+           (edu.stanford.nlp.ling TaggedWord Word)
+           (edu.stanford.nlp.tagger.maxent MaxentTagger)
+           (edu.stanford.nlp.trees LabeledScoredTreeNode
+                                   LabeledScoredTreeReaderFactory
+                                   PennTreebankLanguagePack
+                                   TypedDependency)
+           (edu.stanford.nlp.parser.common ParserGrammar)
+           (edu.stanford.nlp.parser.lexparser LexicalizedParser)
+           (edu.stanford.nlp.pipeline Annotation StanfordCoreNLP)
+           (edu.stanford.nlp.ling CoreAnnotations$SentencesAnnotation
+                                  CoreAnnotations$TextAnnotation
+                                  CoreAnnotations$NamedEntityTagAnnotation
+                                  CoreAnnotations$TokensAnnotation))
   (:use
     (loom graph attr)
     clojure.set)
@@ -73,17 +75,47 @@
 ;; NER Tagging
 ;;;;;;;;;;;;;;
 
-(defn initialize-pipeline
-  []
-  (let [ner-props (Properties.)]
-    (.put ner-props "annotators" "tokenize, ssplit, pos, lemma, ner")
-    (.put ner-props "pos.model" )
-    (StanfordCoreNLP. ner-props true)))
+(defn- initialize-pipeline
+  ([]
+   (let [ner-props (Properties.)]
+     (.put ner-props "annotators" "tokenize, ssplit, pos, lemma, ner")
+     (StanfordCoreNLP. ner-props true)))
+  ([model-path]
+   (let [ner-props (Properties.)]
+     (.put ner-props "annotators" "tokenize, ssplit, pos, lemma, ner")
+     (.put ner-props "pos.model" model-path)
+     (StanfordCoreNLP. ner-props true))))
 
-(defn annotate-text
-  [text]
-  (.process (initialize-pipeline) text))
+(defn- annotate-text
+  ([text]
+   (.process (initialize-pipeline) text))
+  ([text model-path]
+   (.process (initialize-pipeline model-path) text)))
 
+(defn- ner-map-fn
+  [tok-ann]
+  {:token (.get tok-ann CoreAnnotations$TextAnnotation)
+   :named-entity (.get tok-ann CoreAnnotations$NamedEntityTagAnnotation)})
+
+
+(defn- sentence-map
+  [sentence-annotation]
+  (map ner-map-fn (.get sentence-annotation CoreAnnotations$TokensAnnotation)))
+
+(defn- token-map-fn [sen-ann]
+  {:text   (.get sen-ann CoreAnnotations$TextAnnotation)
+   :tokens (sentence-map sen-ann)})
+
+(defn- pos-ner
+  [^Annotation doc]
+  (map token-map-fn (.get doc CoreAnnotations$SentencesAnnotation)))
+
+(defn tag-ner
+  ([^String text]
+   (pos-ner (annotate-text text)))
+
+  ([text model-path]
+   (pos-ner (annotate-text text))))
 
 ;;;;;;;;;;
 ;; Parsing
