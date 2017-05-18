@@ -76,46 +76,56 @@
 ;;;;;;;;;;;;;;
 
 (defn- initialize-pipeline
+  "0 Arity: Build NER tagging pipeline; use Stanford model
+   1 Arity: Build NER tagging pipeline; use custom model"
   ([]
    (let [ner-props (Properties.)]
      (.put ner-props "annotators" "tokenize, ssplit, pos, lemma, ner")
      (StanfordCoreNLP. ner-props true)))
+
   ([model-path]
    (let [ner-props (Properties.)]
      (.put ner-props "annotators" "tokenize, ssplit, pos, lemma, ner")
-     (.put ner-props "pos.model" model-path)
+     (.put ner-props "ner.model" model-path)
      (StanfordCoreNLP. ner-props true))))
 
 (defn- annotate-text
+  "Annotates text tokens with named entity type.
+   Returns edu.stanford.nlp.pipeline Annotation object"
   ([text]
    (.process (initialize-pipeline) text))
   ([text model-path]
    (.process (initialize-pipeline model-path) text)))
 
-(defn- ner-map-fn
+(defn- get-tokens-entities
+  "builds map: {:token token :named-entity named-entity}"
   [tok-ann]
   {:token (.get tok-ann CoreAnnotations$TextAnnotation)
    :named-entity (.get tok-ann CoreAnnotations$NamedEntityTagAnnotation)})
 
-
-(defn- sentence-map
+(defn- get-token-annotations
+  "Passes TokenAnnotations extracted from SentencesAnnotation to get-tokens-entities
+  which returns a map {:token token :named-entity ne}"
   [sentence-annotation]
-  (map ner-map-fn (.get sentence-annotation CoreAnnotations$TokensAnnotation)))
+  (map get-tokens-entities (.get sentence-annotation CoreAnnotations$TokensAnnotation)))
 
-(defn- token-map-fn [sen-ann]
+(defn- get-text-tokens [sen-ann]
+  "builds map: {:text text :sentences sentences :tokens tokens}"
   {:text   (.get sen-ann CoreAnnotations$TextAnnotation)
-   :tokens (sentence-map sen-ann)})
+   :sentences (split-sentences (.get sen-ann CoreAnnotations$TextAnnotation))
+   :tokens (get-token-annotations sen-ann)})
 
-(defn- pos-ner
-  [^Annotation doc]
-  (map token-map-fn (.get doc CoreAnnotations$SentencesAnnotation)))
+(defn- get-sentences-annotation
+  "passes SentencesAnnotation extracted from Annotation object to function
+  get-text-tokens which returns a map:
+  {:text text :sentences sentences :tokens {:token token :named-entity ne}}"
+  [^Annotation annotation]
+  (map get-text-tokens (.get annotation CoreAnnotations$SentencesAnnotation)))
 
 (defn tag-ner
-  ([^String text]
-   (pos-ner (annotate-text text)))
-
-  ([text model-path]
-   (pos-ner (annotate-text text))))
+  "Returns a map object containing original text, tokens, sentences"
+  ([^String text] (get-sentences-annotation (annotate-text text)))
+  ([^String text model-path] (get-sentences-annotation (annotate-text text model-path))))
 
 ;;;;;;;;;;
 ;; Parsing
