@@ -1,20 +1,23 @@
 (ns corenlp
-  (:import
-    (java.io StringReader)
-    (java.util ArrayList Collection)
-    (edu.stanford.nlp.process
-      DocumentPreprocessor PTBTokenizer)
-    (edu.stanford.nlp.ling TaggedWord Word)
-    (edu.stanford.nlp.tagger.maxent MaxentTagger)
-    (edu.stanford.nlp.trees
-      LabeledScoredTreeNode
-      LabeledScoredTreeReaderFactory
-      PennTreebankLanguagePack
-      TypedDependency)
-    (edu.stanford.nlp.parser.common
-      ParserGrammar)
-    (edu.stanford.nlp.parser.lexparser
-      LexicalizedParser))
+  (:import (java.io StringReader)
+           (java.util ArrayList
+                      Collection
+                      Properties)
+           (edu.stanford.nlp.process DocumentPreprocessor
+                                     PTBTokenizer)
+           (edu.stanford.nlp.ling TaggedWord Word)
+           (edu.stanford.nlp.tagger.maxent MaxentTagger)
+           (edu.stanford.nlp.trees LabeledScoredTreeNode
+                                   LabeledScoredTreeReaderFactory
+                                   PennTreebankLanguagePack
+                                   TypedDependency)
+           (edu.stanford.nlp.parser.common ParserGrammar)
+           (edu.stanford.nlp.parser.lexparser LexicalizedParser)
+           (edu.stanford.nlp.pipeline Annotation StanfordCoreNLP)
+           (edu.stanford.nlp.ling CoreAnnotations$SentencesAnnotation
+                                  CoreAnnotations$TextAnnotation
+                                  CoreAnnotations$NamedEntityTagAnnotation
+                                  CoreAnnotations$TokensAnnotation))
   (:use
     (loom graph attr)
     clojure.set)
@@ -67,6 +70,62 @@
 (defmethod pos-tag :default [coll]
   (.tagSentence ^MaxentTagger (load-pos-tagger) 
                 (ArrayList. ^Collection (map word coll))))
+
+;;;;;;;;;;;;;;
+;; NER Tagging
+;;;;;;;;;;;;;;
+
+(defn- initialize-pipeline
+  "0 Arity: Build NER tagging pipeline; use Stanford model
+   1 Arity: Build NER tagging pipeline; use custom model"
+  ([]
+   (let [ner-props (Properties.)]
+     (.put ner-props "annotators" "tokenize, ssplit, pos, lemma, ner")
+     (StanfordCoreNLP. ner-props true)))
+
+  ([model-path]
+   (let [ner-props (Properties.)]
+     (.put ner-props "annotators" "tokenize, ssplit, pos, lemma, ner")
+     (.put ner-props "ner.model" model-path)
+     (StanfordCoreNLP. ner-props true))))
+
+(defn- annotate-text
+  "Annotates text tokens with named entity type.
+   Returns edu.stanford.nlp.pipeline Annotation object"
+  ([text]
+   (.process (initialize-pipeline) text))
+  ([text model-path]
+   (.process (initialize-pipeline model-path) text)))
+
+(defn- get-tokens-entities
+  "builds map: {:token token :named-entity named-entity}"
+  [tok-ann]
+  {:token (.get tok-ann CoreAnnotations$TextAnnotation)
+   :named-entity (.get tok-ann CoreAnnotations$NamedEntityTagAnnotation)})
+
+(defn- get-token-annotations
+  "Passes TokenAnnotations extracted from SentencesAnnotation to get-tokens-entities
+  which returns a map {:token token :named-entity ne}"
+  [sentence-annotation]
+  (map get-tokens-entities (.get sentence-annotation CoreAnnotations$TokensAnnotation)))
+
+(defn- get-text-tokens [sen-ann]
+  "builds map: {:text text :sentences sentences :tokens tokens}"
+  {:text   (.get sen-ann CoreAnnotations$TextAnnotation)
+   :sentences (split-sentences (.get sen-ann CoreAnnotations$TextAnnotation))
+   :tokens (get-token-annotations sen-ann)})
+
+(defn- get-sentences-annotation
+  "passes SentencesAnnotation extracted from Annotation object to function
+  get-text-tokens which returns a map:
+  {:text text :sentences sentences :tokens {:token token :named-entity ne}}"
+  [^Annotation annotation]
+  (map get-text-tokens (.get annotation CoreAnnotations$SentencesAnnotation)))
+
+(defn tag-ner
+  "Returns a map object containing original text, tokens, sentences"
+  ([^String text] (get-sentences-annotation (annotate-text text)))
+  ([^String text model-path] (get-sentences-annotation (annotate-text text model-path))))
 
 ;;;;;;;;;;
 ;; Parsing
