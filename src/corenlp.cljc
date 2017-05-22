@@ -75,7 +75,7 @@
 ;; NER Tagging
 ;;;;;;;;;;;;;;
 
-(defn- initialize-pipeline
+(defn initialize-pipeline
   "0 Arity: Build NER tagging pipeline; use Stanford model
    1 Arity: Build NER tagging pipeline; use custom model"
   ([]
@@ -92,10 +92,8 @@
 (defn- annotate-text
   "Annotates text tokens with named entity type.
    Returns edu.stanford.nlp.pipeline Annotation object"
-  ([text]
-   (.process (initialize-pipeline) text))
-  ([text model-path]
-   (.process (initialize-pipeline model-path) text)))
+  ([pipeline text]
+   (.process pipeline text)))
 
 (defn- get-tokens-entities
   "builds map: {:token token :named-entity named-entity}"
@@ -110,22 +108,19 @@
   (map get-tokens-entities (.get sentence-annotation CoreAnnotations$TokensAnnotation)))
 
 (defn- get-text-tokens [sen-ann]
-  "builds map: {:text text :sentences sentences :tokens tokens}"
-  {:text   (.get sen-ann CoreAnnotations$TextAnnotation)
-   :sentences (split-sentences (.get sen-ann CoreAnnotations$TextAnnotation))
-   :tokens (get-token-annotations sen-ann)})
+  "builds map: {:tokens tokens}"
+  { :tokens (get-token-annotations sen-ann)})
 
 (defn- get-sentences-annotation
   "passes SentencesAnnotation extracted from Annotation object to function
   get-text-tokens which returns a map:
-  {:text text :sentences sentences :tokens {:token token :named-entity ne}}"
+  {:tokens {:token token :named-entity ne}}"
   [^Annotation annotation]
   (map get-text-tokens (.get annotation CoreAnnotations$SentencesAnnotation)))
 
 (defn tag-ner
   "Returns a map object containing original text, tokens, sentences"
-  ([^String text] (get-sentences-annotation (annotate-text text)))
-  ([^String text model-path] (get-sentences-annotation (annotate-text text model-path))))
+  ([pipeline text] (get-sentences-annotation (annotate-text pipeline text))))
 
 ;;;;;;;;;;
 ;; Parsing
