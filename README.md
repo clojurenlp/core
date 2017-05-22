@@ -80,3 +80,4 @@ Distributed under the Eclipse Public License, the same as Clojure.
 - Cory Giles
 - Hans Engel
 - Damien Stanton
+- Andrew McLoud
