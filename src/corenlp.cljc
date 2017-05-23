@@ -41,7 +41,7 @@
     (map #(assoc {}
             :token (.get % CoreAnnotations$TextAnnotation)
             :start-offset (.beginPosition %)
-            :end-offset (.endPosition %))
+            :end-offset (dec (.endPosition %)))
          core-labels)))
 
 
@@ -67,7 +67,7 @@
        (map #(assoc {}
                :text (subs text (sentence-start-offset %) (sentence-end-offset %))
                :start-offset (sentence-start-offset %)
-               :end-offset (sentence-end-offset %))
+               :end-offset (dec (sentence-end-offset %)))
          core-labels-list)))
 
 
@@ -129,7 +129,7 @@
   {:token (.get tok-ann CoreAnnotations$TextAnnotation)
    :named-entity (.get tok-ann CoreAnnotations$NamedEntityTagAnnotation)
    :start-offset (.beginPosition tok-ann)
-   :end-offset (.endPosition tok-ann)})
+   :end-offset (dec (.endPosition tok-ann))})
 
 (defn- get-token-annotations
   "Passes TokenAnnotations extracted from SentencesAnnotation to get-tokens-entities
