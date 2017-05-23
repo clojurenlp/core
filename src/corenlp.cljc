@@ -17,7 +17,8 @@
            (edu.stanford.nlp.ling CoreAnnotations$SentencesAnnotation
                                   CoreAnnotations$TextAnnotation
                                   CoreAnnotations$NamedEntityTagAnnotation
-                                  CoreAnnotations$TokensAnnotation))
+                                  CoreAnnotations$TokensAnnotation
+                                  Word))
   (:use
     (loom graph attr)
     clojure.set)
@@ -29,20 +30,47 @@
 ;; Preprocessing
 ;;;;;;;;;;;;;;;;
 
-(defn tokenize [s]
-  "Tokenize an input string into a sequence of Word objects."
+(defn- tokenize-corelabels [text]
+  "Tokenize an input string into a sequence of CoreLabel objects"
   (.tokenize
     (PTBTokenizer/newPTBTokenizer
-      (StringReader. s)))) 
+      (StringReader. text) false false)))
 
-(defn split-sentences [text]
-  "Split a string into a sequence of sentences, each of which is a sequence of Word objects. (Thus, this method both splits sentences and tokenizes simultaneously.)"
+(defn tokenize [text]
+  (let [core-labels (tokenize-corelabels text)]
+    (map #(assoc {}
+            :token (.get % CoreAnnotations$TextAnnotation)
+            :start-offset (.beginPosition %)
+            :end-offset (.endPosition %))
+         core-labels)))
+
+
+(defn- split-sentences [text]
+  "Split a string into a sequence of sentences, each of which is a sequence of CoreLabels"
   (let [rdr (StringReader. text)]
-    (map #(vec (map str %))
       (iterator-seq
         (.iterator
-          (DocumentPreprocessor. rdr))))))
- 
+          (DocumentPreprocessor. rdr)))))
+
+(defn- sentence-start-offset [core-labels]
+  (first (map #(.beginPosition %) core-labels)))
+
+(defn- sentence-end-offset [core-labels]
+  (last (map #(.endPosition %) core-labels)))
+
+(defn sentence-text [core-labels]
+  (map #(.get % CoreAnnotations$TextAnnotation) core-labels))
+
+
+(defn sentenize [text]
+  (let [core-labels-list (split-sentences text)]
+       (map #(assoc {}
+               :text (subs text (sentence-start-offset %) (sentence-end-offset %))
+               :start-offset (sentence-start-offset %)
+               :end-offset (sentence-end-offset %))
+         core-labels-list)))
+
+
 (defmulti word 
   "Attempt to convert a given object into a Word, which is used by many downstream algorithms."
   type)
@@ -99,7 +127,9 @@
   "builds map: {:token token :named-entity named-entity}"
   [tok-ann]
   {:token (.get tok-ann CoreAnnotations$TextAnnotation)
-   :named-entity (.get tok-ann CoreAnnotations$NamedEntityTagAnnotation)})
+   :named-entity (.get tok-ann CoreAnnotations$NamedEntityTagAnnotation)
+   :start-offset (.beginPosition tok-ann)
+   :end-offset (.endPosition tok-ann)})
 
 (defn- get-token-annotations
   "Passes TokenAnnotations extracted from SentencesAnnotation to get-tokens-entities
@@ -109,7 +139,7 @@
 
 (defn- get-text-tokens [sen-ann]
   "builds map: {:tokens tokens}"
-  { :tokens (get-token-annotations sen-ann)})
+  {:tokens (get-token-annotations sen-ann)})
 
 (defn- get-sentences-annotation
   "passes SentencesAnnotation extracted from Annotation object to function
