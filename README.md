@@ -22,7 +22,26 @@ Natural language processing in Clojure/ClojureScript based on the Stanford-CoreN
 
 Returns a list of `TaggedWord` objects. Call `.tag()` on a `TaggedWord` instance
 to get its tag. For more information, see the [relevant Javadoc](http://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/ling/TaggedWord.html)
+### Named Entity Recognition
 
+To tag named entities utilizing standard Stanford NER model:
+
+    (use 'corenlp)
+    (def pipeline (initialize-pipeline))
+    (def text "The United States of America will be tagged as a location")
+    (tag-ner pipeline text)
+
+Training your own model [How to Train Your Own Model](https://nlp.stanford.edu/software/crf-faq.html#a)
+
+To tag named entities utilizing custom trained model: 
+    
+    (use 'corenlp)
+    (def pipeline (initialize-pipeline "path-to-serialized-model"))
+    (def text "The United States of America will be tagged as a location")
+    (tag-ner pipeline text)
+    
+Utilizing either NER tagging strategy, a map containing the original text, sentences, tokens, and ner tags will be returned.
+    
 ### Parsing
 
 To parse a sentence:
@@ -61,3 +80,4 @@ Distributed under the Eclipse Public License, the same as Clojure.
 - Cory Giles
 - Hans Engel
 - Damien Stanton
+- Andrew McLoud
