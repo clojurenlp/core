@@ -1,4 +1,4 @@
-(defproject corenlp "3.6.1"
+(defproject corenlp "3.6.2"
   :description "Clojure wrapper for the Stanford CoreNLP tools."
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [edu.stanford.nlp/stanford-corenlp "3.6.0"]

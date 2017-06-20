@@ -41,7 +41,7 @@
     (map #(assoc {}
             :token (.get % CoreAnnotations$TextAnnotation)
             :start-offset (.beginPosition %)
-            :end-offset (dec (.endPosition %)))
+            :end-offset (.endPosition %))
          core-labels)))
 
 
@@ -67,7 +67,7 @@
        (map #(assoc {}
                :text (subs text (sentence-start-offset %) (sentence-end-offset %))
                :start-offset (sentence-start-offset %)
-               :end-offset (dec (sentence-end-offset %)))
+               :end-offset (sentence-end-offset %))
          core-labels-list)))
 
 
