@@ -129,7 +129,7 @@
   {:token (.get tok-ann CoreAnnotations$TextAnnotation)
    :named-entity (.get tok-ann CoreAnnotations$NamedEntityTagAnnotation)
    :start-offset (.beginPosition tok-ann)
-   :end-offset (dec (.endPosition tok-ann))})
+   :end-offset (.endPosition tok-ann)})
 
 (defn- get-token-annotations
   "Passes TokenAnnotations extracted from SentencesAnnotation to get-tokens-entities
