@@ -8,3 +8,4 @@
 /.lein-deps-sum
 /.lein-repl-history
 /target
+.nrepl-port

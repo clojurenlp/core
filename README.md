@@ -16,12 +16,26 @@ Natural language processing in Clojure/ClojureScript based on the Stanford-CoreN
 
 ### Part-of-Speech Tagging
 
-    (use 'corenlp)
-    (pos-tag (tokenize "Colorless green ideas sleep furiously."))
-    ;; => [#<TaggedWord Colorless/JJ> #<TaggedWord green/JJ> ...]
+To get a list of `TaggedWord` objects:
 
-Returns a list of `TaggedWord` objects. Call `.tag()` on a `TaggedWord` instance
-to get its tag. For more information, see the [relevant Javadoc](http://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/ling/TaggedWord.html)
+    (use 'corenlp)
+    ;;  use any of these:
+    (-> "Short and sweet." tokenize pos-tag)
+    (-> "Short and sweet." split-sentences first pos-tag)
+    (-> ["Short" "and" "sweet" "."] pos-tag)
+    (-> "Short and sweet." pos-tag)
+    
+    ;; => [#<TaggedWord Short/JJ> #<TaggedWord and/CC> ...]
+
+To return a tag string from TaggedWord object:
+    
+    (->> "Short and sweet." tokenize pos-tag first .tag)
+    ;; => JJ
+    (->> "Short and sweet." tokenize pos-tag (map #(.tag %)))
+    ;; => ("JJ" "CC" "JJ" ".")
+
+For more information, see the [relevant Javadoc](http://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/ling/TaggedWord.html)
+
 ### Named Entity Recognition
 
 To tag named entities utilizing standard Stanford NER model:
@@ -81,3 +95,4 @@ Distributed under the Eclipse Public License, the same as Clojure.
 - Hans Engel
 - Damien Stanton
 - Andrew McLoud
+- Leon Talbot
