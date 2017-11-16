@@ -1,4 +1,9 @@
 (ns corenlp
+  (:require
+   [clojure.data.json :as json]
+   [clojure.set :as set]
+   [loom.attr :as attr]
+   [loom.graph :as graph])
   (:import (java.io StringReader)
            (java.util ArrayList
                       Collection
@@ -20,11 +25,6 @@
                                   CoreAnnotations$NamedEntityTagAnnotation
                                   CoreAnnotations$TokensAnnotation
                                   Word))
-  (:use
-    (loom graph attr)
-    clojure.set)
-  (:require
-    [clojure.data.json :as json])
   (:gen-class :main true))
 
 
@@ -106,10 +106,10 @@
 
 (defmethod word :default [x] (Word. x))
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Part-of-speech tagging
 ;;;;;;;;;;;;;;;;;;;;;;;;;
-
 
 (def ^{:private true} 
   load-pos-tagger
@@ -195,6 +195,7 @@
   "Returns a map object containing original text, tokens, sentences"
   ([pipeline text] (get-sentences-annotation (annotate-text pipeline text))))
 
+
 ;;;;;;;;;;
 ;; Parsing
 ;;;;;;;;;;
@@ -242,7 +243,7 @@
 (defrecord DependencyParse [words tags edges])
 
 (defn roots [dp]
-  (difference
+  (set/difference
    (set (range (count (:words dp))))
    (set (map second (:edges dp)))))
 
@@ -270,8 +271,8 @@
         (vec (map #(.word ^TaggedWord %) ty))
         (vec (map #(.tag ^TaggedWord %) ty))
         (map (fn [^TypedDependency d] 
-               [(dec (.. d gov index))
-                (dec (.. d dep index))
+               [(.. d gov index)
+                (.. d dep index)
                 (keyword
                  (.. d reln toString))])
              (.typedDependencies
@@ -286,11 +287,11 @@
 (defmethod dependency-graph DependencyParse [dp]
   "Produce a loom graph from a DependencyParse record."
   (let [[words tags edges] (map #(% dp) [:words :tags :edges])
-        g (apply digraph (map (partial take 2) edges))]
-    (reduce (fn [g [i t]] (add-attr g i :tag t))
-            (reduce (fn [g [i w]] (add-attr g i :word w))
+        g (apply graph/digraph (map (partial take 2) edges))]
+    (reduce (fn [g [i t]] (attr/add-attr g i :tag t))
+            (reduce (fn [g [i w]] (attr/add-attr g i :word w))
                     (reduce (fn [g [gov dep type]]
-                              (add-attr g gov dep :type type)) g edges)
+                              (attr/add-attr g gov dep :type type)) g edges)
                     (map-indexed vector words))
             (map-indexed vector tags))))
 
