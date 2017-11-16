@@ -195,6 +195,7 @@
   "Returns a map object containing original text, tokens, sentences"
   ([pipeline text] (get-sentences-annotation (annotate-text pipeline text))))
 
+
 ;;;;;;;;;;
 ;; Parsing
 ;;;;;;;;;;
@@ -223,6 +224,7 @@
   (memoize
     (fn []
       (LexicalizedParser/loadModel))))
+
 
 (defmulti parse class)
 
@@ -280,20 +282,17 @@
 (defmethod dependency-parse :default [s]
   (dependency-parse (parse s)))
 
-(defn map-indexed-inc [f coll]
-  (map f (iterate inc 1) coll))
-
 (defmulti dependency-graph class)
 
 (defmethod dependency-graph DependencyParse [dp]
   "Produce a loom graph from a DependencyParse record."
   (let [[words tags edges] (map #(% dp) [:words :tags :edges])
-        g (apply graph/digraph (map (partial take 2) edges))
-        r1 (reduce (fn [g [gov dep type]]
-                     (attr/add-attr g gov dep :type type)) g edges)
-        i-words (map-indexed vector words)]
+        g (apply graph/digraph (map (partial take 2) edges))]
     (reduce (fn [g [i t]] (attr/add-attr g i :tag t))
-            (reduce (fn [g [i w]] (attr/add-attr g i :word w)) r1 i-words)
+            (reduce (fn [g [i w]] (attr/add-attr g i :word w))
+                    (reduce (fn [g [gov dep type]]
+                              (attr/add-attr g gov dep :type type)) g edges)
+                    (map-indexed vector words))
             (map-indexed vector tags))))
 
 (defmethod dependency-graph :default [x]
