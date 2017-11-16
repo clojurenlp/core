@@ -27,6 +27,27 @@
     [clojure.data.json :as json])
   (:gen-class :main true))
 
+
+;;;;;;;;;;;;;;;;
+;; Pretty Print Methods
+;;;;;;;;;;;;;;;;
+
+(defn pprint-methods! 
+  "Simplifies object representation in REPL 
+   from
+   [#object[edu.stanford.nlp.ling.TaggedWord 0x6a16b1ef\"Short/JJ\"]]
+   to 
+   [#<TaggedWord Short/JJ>]"
+  [print-objects] 
+  (doseq [o print-objects] 
+    (defmethod print-method o
+      [piece ^java.io.Writer writer]
+      (.write 
+       writer 
+       (str "#<" (.getSimpleName o) " " (.toString piece) ">")))))
+
+(pprint-methods! [CoreLabel TaggedWord Word])
+
 ;;;;;;;;;;;;;;;;
 ;; Preprocessing
 ;;;;;;;;;;;;;;;;
@@ -70,6 +91,7 @@
                :start-offset (sentence-start-offset %)
                :end-offset (dec (sentence-end-offset %)))
          core-labels-list)))
+
 
 (defmulti word 
   "Attempt to convert a given object into a Word, which is used by many downstream algorithms."
@@ -300,3 +322,4 @@
       (if parses
         (println
           (json/write-str parses))))))
+
