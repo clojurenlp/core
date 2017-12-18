@@ -14,23 +14,37 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Leiningen: aysylu/loom:0.6.0" level="project" />
-    <orderEntry type="library" name="Leiningen: cider/cider-nrepl:0.14.0" level="project" />
+    <orderEntry type="library" name="Leiningen: clj-antlr:0.2.3" level="project" />
     <orderEntry type="library" name="Leiningen: clojure-complete:0.2.4" level="project" />
     <orderEntry type="library" name="Leiningen: com.googlecode.efficient-java-matrix-library/ejml:0.23" level="project" />
     <orderEntry type="library" name="Leiningen: com.io7m.xom/xom:1.2.10" level="project" />
     <orderEntry type="library" name="Leiningen: de.jollyday/jollyday:0.4.7" level="project" />
     <orderEntry type="library" name="Leiningen: edu.stanford.nlp/stanford-corenlp:3.6.0" level="project" />
     <orderEntry type="library" name="Leiningen: edu.stanford.nlp/stanford-corenlp:3.6.0:models" level="project" />
+    <orderEntry type="library" name="Leiningen: fipp:0.6.6" level="project" />
+    <orderEntry type="library" name="Leiningen: grimradical/clj-semver:0.3.0" level="project" />
+    <orderEntry type="library" name="Leiningen: instaparse:1.4.1" level="project" />
+    <orderEntry type="library" name="Leiningen: io.aviso/pretty:0.1.30" level="project" />
     <orderEntry type="library" name="Leiningen: javax.json/javax.json-api:1.0" level="project" />
     <orderEntry type="library" name="Leiningen: javax.xml.bind/jaxb-api:2.2.7" level="project" />
     <orderEntry type="library" name="Leiningen: joda-time:2.9" level="project" />
+    <orderEntry type="library" name="Leiningen: mvxcvi/arrangement:1.1.0" level="project" />
+    <orderEntry type="library" name="Leiningen: mvxcvi/puget:1.0.1" level="project" />
+    <orderEntry type="library" name="Leiningen: mvxcvi/whidbey:1.3.0" level="project" />
+    <orderEntry type="library" name="Leiningen: org.antlr/antlr4-runtime:4.5.3" level="project" />
+    <orderEntry type="library" name="Leiningen: org.antlr/antlr4:4.5.3" level="project" />
+    <orderEntry type="library" name="Leiningen: org.clojars.brenton/google-diff-match-patch:0.1" level="project" />
     <orderEntry type="library" name="Leiningen: org.clojure/clojure:1.8.0" level="project" />
+    <orderEntry type="library" name="Leiningen: org.clojure/core.rrb-vector:0.0.11" level="project" />
+    <orderEntry type="library" name="Leiningen: org.clojure/data.codec:0.1.0" level="project" />
     <orderEntry type="library" name="Leiningen: org.clojure/data.json:0.2.6" level="project" />
     <orderEntry type="library" name="Leiningen: org.clojure/data.priority-map:0.0.5" level="project" />
     <orderEntry type="library" name="Leiningen: org.clojure/tools.nrepl:0.2.12" level="project" />
     <orderEntry type="library" name="Leiningen: org.slf4j/slf4j-api:1.7.12" level="project" />
-    <orderEntry type="library" name="Leiningen: org.tcrawley/dynapath:0.2.4" level="project" />
+    <orderEntry type="library" name="Leiningen: robert/hooke:1.3.0" level="project" />
     <orderEntry type="library" name="Leiningen: tailrecursion/cljs-priority-map:1.1.0" level="project" />
+    <orderEntry type="library" name="Leiningen: venantius/glow:0.1.4" level="project" />
+    <orderEntry type="library" name="Leiningen: venantius/ultra:0.5.1" level="project" />
     <orderEntry type="library" name="Leiningen: xalan:2.7.0" level="project" />
     <orderEntry type="library" name="Leiningen: xerces/xercesImpl:2.8.0" level="project" />
     <orderEntry type="library" name="Leiningen: xml-apis:1.3.03" level="project" />
