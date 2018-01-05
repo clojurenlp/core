@@ -9,3 +9,6 @@
 /.lein-repl-history
 /target
 .nrepl-port
+bin/
+.project
+*.asc

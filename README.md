@@ -1,6 +1,8 @@
 # corenlp
 
-Current build: [![CircleCI](https://circleci.com/gh/damienstanton/stanford-corenlp/tree/master.svg?style=svg&circle-token=673be35e60d99ec7be891d6da03b9865a48cb906)](https://circleci.com/gh/damienstanton/stanford-corenlp/tree/master)
+[![Clojars Project](https://img.shields.io/clojars/v/corenlp.svg)](https://clojars.org/corenlp)
+
+[![CircleCI](https://circleci.com/gh/damienstanton/stanford-corenlp/tree/master.svg?style=svg&circle-token=673be35e60d99ec7be891d6da03b9865a48cb906)](https://circleci.com/gh/damienstanton/stanford-corenlp/tree/master)
 
 Natural language processing in Clojure/ClojureScript based on the Stanford-CoreNLP parser.
 
