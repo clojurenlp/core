@@ -1,6 +1,7 @@
 # org.clojurenlp.core
 
 [![Clojars Project](https://img.shields.io/clojars/v/org.clojurenlp/core.svg)](https://clojars.org/org.clojurenlp/core)
+[![Build Status](https://travis-ci.org/clojurenlp/core.svg?branch=master)](https://travis-ci.org/clojurenlp/core)
 
 Natural language processing in Clojure based on the Stanford-CoreNLP parser.
 
