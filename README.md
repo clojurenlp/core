@@ -105,4 +105,4 @@ Distributed under the Apache 2.0 License. See LICENSE for details.
 
 
 
-[![donation](https://img.shields.io/badge/Donate_-to_this_project-green.svg)](https://paypal.me/damienstanton)
+[![donation](https://img.shields.io/badge/Donate_-to_this_project-green.svg)](https://paypal.me/clojurenlp)
