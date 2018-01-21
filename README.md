@@ -1,18 +1,17 @@
-# corenlp
+# org.clojurenlp.core
 
-[![Clojars Project](https://img.shields.io/clojars/v/corenlp.svg)](https://clojars.org/corenlp)
 
 [![CircleCI](https://circleci.com/gh/damienstanton/stanford-corenlp/tree/master.svg?style=svg&circle-token=673be35e60d99ec7be891d6da03b9865a48cb906)](https://circleci.com/gh/damienstanton/stanford-corenlp/tree/master)
 
-Natural language processing in Clojure/ClojureScript based on the Stanford-CoreNLP parser.
+Natural language processing in Clojure based on the Stanford-CoreNLP parser.
 
-**Warning:** Under heavy rewrite. Please refrain from trying to use this until it is complete!
+**NOTE** a work in progress, currently in the POC phase.
 
 ## Usage
 
 ### Tokenization
 
-    (use 'corenlp)
+    (use 'org.clojurenlp.core)
     (def text "This is a simple sentence.")
     (tokenize text)
 
@@ -20,7 +19,7 @@ Natural language processing in Clojure/ClojureScript based on the Stanford-CoreN
 
 To get a list of `TaggedWord` objects:
 
-    (use 'corenlp)
+    (use 'org.clojurenlp.core)
     ;;  use any of these:
     (-> "Short and sweet." tokenize pos-tag)
     (-> "Short and sweet." split-sentences first pos-tag)
@@ -42,7 +41,7 @@ For more information, see the [relevant Javadoc](http://nlp.stanford.edu/nlp/jav
 
 To tag named entities utilizing standard Stanford NER model:
 
-    (use 'corenlp)
+    (use 'org.clojurenlp.core)
     (def pipeline (initialize-pipeline))
     (def text "The United States of America will be tagged as a location")
     (tag-ner pipeline text)
@@ -51,7 +50,7 @@ Training your own model [How to Train Your Own Model](https://nlp.stanford.edu/s
 
 To tag named entities utilizing custom trained model: 
     
-    (use 'corenlp)
+    (use 'org.clojurenlp.core)
     (def pipeline (initialize-pipeline "path-to-serialized-model"))
     (def text "The United States of America will be tagged as a location")
     (tag-ner pipeline text)
@@ -62,7 +61,7 @@ Utilizing either NER tagging strategy, a map containing the original text, sente
 
 To parse a sentence:
 
-	(use 'corenlp)
+	(use 'org.clojurenlp.core)
 	(parse (tokenize text))
 
 You will get back a LabeledScoredTreeNode which you can plug in to

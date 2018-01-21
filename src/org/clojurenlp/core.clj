@@ -1,4 +1,4 @@
-(ns corenlp
+(ns org.clojurenlp.core
   (:require
    [clojure.data.json :as json]
    [clojure.set :as set]
@@ -27,11 +27,6 @@
                                   Word))
   (:gen-class :main true))
 
-
-;;;;;;;;;;;;;;;;
-;; Pretty Print Methods
-;;;;;;;;;;;;;;;;
-
 (defn pprint-methods! 
   "Simplifies object representation in REPL 
    from
@@ -47,10 +42,6 @@
        (str "#<" (.getSimpleName o) " " (.toString piece) ">")))))
 
 (pprint-methods! [CoreLabel TaggedWord Word])
-
-;;;;;;;;;;;;;;;;
-;; Preprocessing
-;;;;;;;;;;;;;;;;
 
 (defn- tokenize-corelabels [text]
   "Tokenize an input string into a sequence of CoreLabel objects"
@@ -106,11 +97,6 @@
 
 (defmethod word :default [x] (Word. x))
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Part-of-speech tagging
-;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (def ^{:private true} 
   load-pos-tagger
   (memoize (fn [] (MaxentTagger. MaxentTagger/DEFAULT_JAR_PATH))))
@@ -140,11 +126,6 @@
 
 (defmethod pos-tag :default [coll]
   (tag-words ^Collection coll))
-
-
-;;;;;;;;;;;;;;
-;; NER Tagging
-;;;;;;;;;;;;;;
 
 (defn initialize-pipeline
   "0 Arity: Build NER tagging pipeline; use Stanford model
@@ -196,10 +177,6 @@
   ([pipeline text] (get-sentences-annotation (annotate-text pipeline text))))
 
 
-;;;;;;;;;;
-;; Parsing
-;;;;;;;;;;
-
 (let [trf (LabeledScoredTreeReaderFactory.)]
 
  (defn read-parse-tree [s]
@@ -238,7 +215,6 @@
           (ArrayList.
            ^Collection (map word coll))))
 
-;; Typed Dependencies
 
 (defrecord DependencyParse [words tags edges])
 
@@ -249,9 +225,6 @@
 
 (defn add-roots [dp]
   "Add explicit ROOT relations to the dependency parse. This will turn it from a polytree to a tree."
-  ;;Note to self: in the new version of the parser, but not the
-  ;;CoreNLP, this is already done. So when incorporating CoreNLP
-  ;;updates be sure this isn't redundant.
   (assoc dp :edges
          (concat (:edges dp)
           (for [r (roots dp)]
@@ -298,12 +271,9 @@
 (defmethod dependency-graph :default [x]
   (dependency-graph (dependency-parse x)))
  
-;; CLI (for dependency parsing)
 
 (defn between [n low high]
   (and (>= n low) (<= n high)))
-
-;; TODO: use real CLI argument parsing
                 
 (defn -main [& args]
   (let [min-length 5
