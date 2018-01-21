@@ -1,7 +1,6 @@
 # org.clojurenlp.core
 
-
-[![CircleCI](https://circleci.com/gh/damienstanton/stanford-corenlp/tree/master.svg?style=svg&circle-token=673be35e60d99ec7be891d6da03b9865a48cb906)](https://circleci.com/gh/damienstanton/stanford-corenlp/tree/master)
+[![Clojars Project](https://img.shields.io/clojars/v/org.clojurenlp/core.svg)](https://clojars.org/org.clojurenlp/core)
 
 Natural language processing in Clojure based on the Stanford-CoreNLP parser.
 
@@ -86,14 +85,23 @@ This requires GraphViz to be installed.
 
 ## License
 
-Copyright (C) 2011-2016 Contributors (Clojure code only)
+© 2018 The ClojureNLP Organization and Contributors
 
-Distributed under the Eclipse Public License, the same as Clojure.
+Distributed under the Apache 2.0 License. See LICENSE for details.
+
+## The ClojureNLP Organization
+- Damien Stanton
+- Leon Talbot
+- Marek Owsikowski
 
 ## Contributors
-
 - Cory Giles
 - Hans Engel
 - Damien Stanton
 - Andrew McLoud
 - Leon Talbot
+- Marek Owsikowski
+
+
+
+[![donation](https://img.shields.io/badge/Donate_-to_this_project-green.svg)](https://paypal.me/damienstanton)
