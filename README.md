@@ -12,9 +12,15 @@ Natural language processing in Clojure based on the Stanford-CoreNLP parser.
 ### Tokenization
 
     (use 'org.clojurenlp.core)
-    (def text "This is a simple sentence.")
-    (tokenize text)
-
+    (tokenize "This is a simple sentence.")
+    ;; => '({:token "This", :start-offset 0, :end-offset 4}
+            {:token "is", :start-offset 5, :end-offset 7}
+            {:token "a", :start-offset 8, :end-offset 9}
+            {:token "simple", :start-offset 10, :end-offset 16}
+            {:token "sentence", :start-offset 17, :end-offset 25}
+            {:token ".", :start-offset 25, :end-offset 26}) 
+        
+        
 ### Part-of-Speech Tagging
 
 To get a list of `TaggedWord` objects:
