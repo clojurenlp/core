@@ -25,3 +25,21 @@
               core/tokenize
               core/pos-tag
               (map #(.tag %))))))
+
+;; TODO: (Damien) stubbed the below. Once I finish these I'll merge and close #20.
+
+(deftest split-sentences)
+
+(deftest sentence-text)
+
+(deftest sentenize)
+
+(deftest tag-sentence)
+
+(deftest tag-words)
+
+(deftest tag-ner)
+
+(deftest read-parse-tree)
+
+(deftest read-scored-parse-tree)
