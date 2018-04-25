@@ -2,10 +2,16 @@
 
 [![Clojars Project](https://img.shields.io/clojars/v/org.clojurenlp/core.svg)](https://clojars.org/org.clojurenlp/core)
 [![Build Status](https://travis-ci.org/clojurenlp/core.svg?branch=master)](https://travis-ci.org/clojurenlp/core)
+[![Gitter Lobby](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/clojurenlp/Lobby)
 
 Natural language processing in Clojure based on the Stanford-CoreNLP parser.
 
-**NOTE** a work in progress, currently in the POC phase.
+# 👋 MAINTAINERS WANTED!
+
+We need help getting this project moving, as the primary org maintainer (@damienstanton) has not had much time in the past three months to make contributions. Please feel free to email to info@clojurenlp.org to join the org, or drop a line in the chat room.
+
+
+This is a work in progress, currently in the POC phase.
 
 ## Usage
 
