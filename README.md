@@ -8,7 +8,7 @@ Natural language processing in Clojure based on the Stanford-CoreNLP parser.
 
 # 👋 MAINTAINERS WANTED!
 
-We need help getting this project moving, as the primary org maintainer (@damienstanton) has not had much time in the past three months to make contributions. Please feel free to email to info@clojurenlp.org to join the org, or drop a line in the chat room.
+We need help getting this project moving. Please feel free to email to leontalbot@gmail.com to join the org, or drop a line in the chat room.
 
 
 This is a work in progress, currently in the POC phase.
@@ -103,9 +103,8 @@ This requires GraphViz to be installed.
 Distributed under the Apache 2.0 License. See LICENSE for details.
 
 ## The ClojureNLP Organization
-- Damien Stanton
-- Leon Talbot
-- Marek Owsikowski
+- Leon Talbot @leontalbot
+- Andrew McLoud @andrewmcloud
 
 ## Contributors
 - Cory Giles
