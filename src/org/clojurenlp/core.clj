@@ -2,6 +2,7 @@
   (:require
    [clojure.data.json :as json]
    [clojure.set :as set]
+   [clojure.walk :as walk]
    [loom.attr :as attr]
    [loom.graph :as graph])
   (:import (java.io StringReader)
@@ -136,8 +137,11 @@
      (StanfordCoreNLP. props true)))
 
   ([properties-map]
-   (let [props (Properties.)]
-     (.putAll props (assoc properties-map "annotators" "tokenize, ssplit, pos, lemma, ner"))
+   (let [props (Properties.)
+         stringified-map (walk/stringify-keys properties-map)]
+     (if (nil? (:annotators properties-map))
+       (.putAll props (assoc stringified-map "annotators" "tokenize, ssplit, pos, lemma, ner,pffft"))
+       (.putAll props stringified-map))
      (StanfordCoreNLP. props true))))
 
 (defn- annotate-text
