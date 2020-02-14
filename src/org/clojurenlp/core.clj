@@ -140,7 +140,7 @@
    (let [props (Properties.)
          stringified-map (walk/stringify-keys properties-map)]
      (if (nil? (:annotators properties-map))
-       (.putAll props (assoc stringified-map "annotators" "tokenize, ssplit, pos, lemma, ner,pffft"))
+       (.putAll props (assoc stringified-map "annotators" "tokenize, ssplit, pos, lemma, ner"))
        (.putAll props stringified-map))
      (StanfordCoreNLP. props true))))
 
