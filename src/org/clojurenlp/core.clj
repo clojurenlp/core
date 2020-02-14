@@ -137,8 +137,7 @@
 
   ([properties-map]
    (let [props (Properties.)]
-     (.putAll props properties-map)
-     (.put props "annotators" "tokenize, ssplit, pos, lemma, ner")
+     (.putAll props (assoc properties-map "annotators" "tokenize, ssplit, pos, lemma, ner"))
      (StanfordCoreNLP. props true))))
 
 (defn- annotate-text
