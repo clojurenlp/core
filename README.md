@@ -87,7 +87,7 @@ string with:
 	(dependency-graph "I like cheese.")
 
 will parse the sentence and return the dependency graph as a
-[loom](https://github.com/jkk/loom) graph, which you can then traverse with
+[Loom](https://github.com/aysylu/loom) graph, which you can then traverse with
 standard graph algorithms like shortest path, etc. You can also view it:
 
 	(def graph (dependency-graph "I like cheese."))
