@@ -1,11 +1,11 @@
-(defproject org.clojurenlp/core "3.7.0"
+(defproject org.clojurenlp/core "3.7.1"
   :description "Clojure wrapper for the Stanford CoreNLP tools."
   :url "https://github.com/clojurenlp/core"
   :license {:name "Apache License, Version 2.0"
   	        :url "https://www.apache.org/licenses/LICENSE-2.0"}
   :dependencies [[org.clojure/clojure "1.9.0"]
-                 [edu.stanford.nlp/stanford-corenlp "3.8.0"]
-                 [edu.stanford.nlp/stanford-corenlp "3.8.0" 
+                 [edu.stanford.nlp/stanford-corenlp "3.9.2"]
+                 [edu.stanford.nlp/stanford-corenlp "3.9.2"
                   :classifier "models"]
                  [org.clojure/data.json "0.2.6"]
                  [aysylu/loom "1.0.0"]

@@ -2,6 +2,7 @@
   (:require
    [clojure.data.json :as json]
    [clojure.set :as set]
+   [clojure.walk :as walk]
    [loom.attr :as attr]
    [loom.graph :as graph])
   (:import (java.io StringReader)
@@ -128,18 +129,20 @@
   (tag-words ^Collection coll))
 
 (defn initialize-pipeline
-  "0 Arity: Build NER tagging pipeline; use Stanford model
-   1 Arity: Build NER tagging pipeline; use custom model"
+  "0 Arity: Build pipeline; use default properties including Stanford's model
+   1 Arity: Build pipeline; use custom properties"
   ([]
-   (let [ner-props (Properties.)]
-     (.put ner-props "annotators" "tokenize, ssplit, pos, lemma, ner")
-     (StanfordCoreNLP. ner-props true)))
+   (let [props (Properties.)]
+     (.put props "annotators" "tokenize, ssplit, pos, lemma, ner")
+     (StanfordCoreNLP. props true)))
 
-  ([model-path]
-   (let [ner-props (Properties.)]
-     (.put ner-props "annotators" "tokenize, ssplit, pos, lemma, ner")
-     (.put ner-props "ner.model" model-path)
-     (StanfordCoreNLP. ner-props true))))
+  ([properties-map]
+   (let [props (Properties.)
+         stringified-map (walk/stringify-keys properties-map)]
+     (if (nil? (:annotators properties-map))
+       (.putAll props (assoc stringified-map "annotators" "tokenize, ssplit, pos, lemma, ner"))
+       (.putAll props stringified-map))
+     (StanfordCoreNLP. props true))))
 
 (defn- annotate-text
   "Annotates text tokens with named entity type.
