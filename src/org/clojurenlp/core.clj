@@ -1,31 +1,28 @@
 (ns org.clojurenlp.core
   (:require
+   [org.clojurenlp.annotations :as ann]
    [clojure.data.json :as json]
    [clojure.set :as set]
    [clojure.walk :as walk]
    [loom.attr :as attr]
    [loom.graph :as graph])
-  (:import (java.io StringReader)
-           (java.util ArrayList
-                      Collection
-                      Map
-                      Properties)
-           (edu.stanford.nlp.process DocumentPreprocessor
-                                     PTBTokenizer)
-           (edu.stanford.nlp.ling CoreLabel TaggedWord Word)
-           (edu.stanford.nlp.tagger.maxent MaxentTagger)
-           (edu.stanford.nlp.trees LabeledScoredTreeNode
-                                   LabeledScoredTreeReaderFactory
-                                   PennTreebankLanguagePack
-                                   TypedDependency)
-           (edu.stanford.nlp.parser.common ParserGrammar)
-           (edu.stanford.nlp.parser.lexparser LexicalizedParser)
-           (edu.stanford.nlp.pipeline Annotation StanfordCoreNLP)
-           (edu.stanford.nlp.ling CoreAnnotations$SentencesAnnotation
-                                  CoreAnnotations$TextAnnotation
-                                  CoreAnnotations$NamedEntityTagAnnotation
-                                  CoreAnnotations$TokensAnnotation
-                                  Word))
+  (:import
+   (java.io StringReader)
+   (java.util ArrayList
+              Collection
+              Map
+              Properties)
+   (edu.stanford.nlp.process DocumentPreprocessor
+                             PTBTokenizer)
+   (edu.stanford.nlp.ling CoreLabel TaggedWord Word)
+   (edu.stanford.nlp.tagger.maxent MaxentTagger)
+   (edu.stanford.nlp.trees LabeledScoredTreeNode
+                           LabeledScoredTreeReaderFactory
+                           PennTreebankLanguagePack
+                           TypedDependency)
+   (edu.stanford.nlp.parser.common ParserGrammar)
+   (edu.stanford.nlp.parser.lexparser LexicalizedParser)
+   (edu.stanford.nlp.pipeline Annotation StanfordCoreNLP))
   (:gen-class :main true))
 
 (defn pprint-methods! 
@@ -53,11 +50,10 @@
 (defn tokenize [text]
   (let [core-labels (tokenize-corelabels text)]
     (map #(assoc {}
-            :token (.get % CoreAnnotations$TextAnnotation)
+            :token (ann/get-text %)
             :start-offset (.beginPosition %)
             :end-offset (.endPosition %))
          core-labels)))
-
 
 (defn split-sentences [text]
   "Split a string into a sequence of sentences, each of which is a sequence of CoreLabels"
@@ -73,7 +69,7 @@
   (last (map #(.endPosition %) core-labels)))
 
 (defn sentence-text [core-labels]
-  (map #(.get % CoreAnnotations$TextAnnotation) core-labels))
+  (map ann/get-text core-labels))
 
 
 (defn sentenize [text]
@@ -153,8 +149,8 @@
 (defn- get-tokens-entities
   "builds map: {:token token :named-entity named-entity}"
   [tok-ann]
-  {:token (.get tok-ann CoreAnnotations$TextAnnotation)
-   :named-entity (.get tok-ann CoreAnnotations$NamedEntityTagAnnotation)
+  {:token (ann/get-text tok-ann)
+   :named-entity (ann/get-named-entity-tag tok-ann)
    :start-offset (.beginPosition tok-ann)
    :end-offset (.endPosition tok-ann)})
 
@@ -162,7 +158,7 @@
   "Passes TokenAnnotations extracted from SentencesAnnotation to get-tokens-entities
   which returns a map {:token token :named-entity ne}"
   [sentence-annotation]
-  (map get-tokens-entities (.get sentence-annotation CoreAnnotations$TokensAnnotation)))
+  (map get-tokens-entities (ann/get-tokens sentence-annotation)))
 
 (defn- get-text-tokens [sen-ann]
   "builds map: {:tokens tokens}"
@@ -173,7 +169,7 @@
   get-text-tokens which returns a map:
   {:tokens {:token token :named-entity ne}}"
   [^Annotation annotation]
-  (map get-text-tokens (.get annotation CoreAnnotations$SentencesAnnotation)))
+  (map get-text-tokens (ann/get-sentences annotation)))
 
 (defn tag-ner
   "Returns a map object containing original text, tokens, sentences"
